@@ -1,6 +1,7 @@
 package com.poligran.tsp.sistema_encuestas.entities;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.springframework.security.core.CredentialsContainer;
@@ -16,7 +17,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,6 +42,8 @@ public class Usuario implements UserDetails{
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Empresa empresa;
 
+    private List<GrantedAuthority> scopes;
+
     @Override
     public String getUsername() {
         return this.email;
@@ -54,6 +56,7 @@ public class Usuario implements UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return scopes;
+        //TODO: return List.of(new SimpleGrantedAuthority("ROLE_USER"));
     }
 }

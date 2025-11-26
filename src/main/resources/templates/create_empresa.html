@@ -1,0 +1,211 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crear Empresa</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      
+      .container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        width: 100%;
+        max-width: 500px;
+        animation: slideDown 0.4s ease-out;
+      }
+      
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateY(-30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      h2 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 28px;
+        text-align: center;
+      }
+      
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 14px;
+      }
+      
+      .form-group {
+        margin-bottom: 25px;
+      }
+      
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 600;
+        font-size: 14px;
+      }
+      
+      input[type="text"] {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        background-color: #f8f9fa;
+      }
+      
+      input[type="text"]:focus {
+        outline: none;
+        border-color: #667eea;
+        background-color: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+      
+      input[type="text"]:hover {
+        border-color: #b8c5f2;
+      }
+      
+      .button-group {
+        display: flex;
+        gap: 12px;
+        margin-top: 30px;
+      }
+      
+      button, .btn-cancel {
+        flex: 1;
+        padding: 14px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+      
+      button[type="submit"] {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+      }
+      
+      button[type="submit"]:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      }
+      
+      button[type="submit"]:active {
+        transform: translateY(0);
+      }
+      
+      .btn-cancel {
+        background-color: #6c757d;
+        color: white;
+      }
+      
+      .btn-cancel:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+      }
+      
+      .icon {
+        margin-right: 5px;
+      }
+      
+      /* Animación para inputs con error */
+      input:invalid:not(:placeholder-shown) {
+        border-color: #dc3545;
+      }
+      
+      /* Efecto de carga en el botón */
+      button[type="submit"]:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>🏢 Crear Empresa</h2>
+      <p class="subtitle">Complete la información de la nueva empresa</p>
+      
+      <form th:action="@{/admin/create/empresa}" th:object="${empresa}" method="post">
+        <div class="form-group">
+          <label for="nombre">
+            <span class="icon">🏷️</span>Nombre de la Empresa
+          </label>
+          <input 
+            type="text" 
+            id="nombre" 
+            th:field="*{nombre}" 
+            required 
+            placeholder="Ej: Tech Solutions S.A.S"
+            autocomplete="organization"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="nit">
+            <span class="icon">📋</span>NIT
+          </label>
+          <input 
+            type="text" 
+            id="nit" 
+            th:field="*{nit}" 
+            required 
+            placeholder="Ej: 900123456-7"
+          />
+        </div>
+        
+        <div class="form-group">
+          <label for="direccion">
+            <span class="icon">📍</span>Dirección
+          </label>
+          <input 
+            type="text" 
+            id="direccion" 
+            th:field="*{direccion}" 
+            required 
+            placeholder="Ej: Calle 123 #45-67"
+            autocomplete="street-address"
+          />
+        </div>
+        
+        <div class="button-group">
+          <button type="submit">
+            <span class="icon">💾</span>Crear Empresa
+          </button>
+          <a th:href="@{/admin}" class="btn-cancel">
+            <span class="icon">❌</span>Cancelar
+          </a>
+        </div>
+      </form>
+    </div>
+  </body>
+</html>

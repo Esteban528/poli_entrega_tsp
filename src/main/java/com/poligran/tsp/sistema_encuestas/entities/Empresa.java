@@ -38,6 +38,6 @@ public class Empresa {
     @Column(unique = true, nullable = false)
     private String direccion;
 
-    @OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     private List<Usuario> userList;
 }

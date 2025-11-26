@@ -1,0 +1,143 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Editar Usuario</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+      }
+      
+      h1 {
+        color: #333;
+        border-bottom: 2px solid #007bff;
+        padding-bottom: 10px;
+      }
+      
+      form {
+        background-color: #f9f9f9;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      
+      .form-group {
+        margin-bottom: 20px;
+      }
+      
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #555;
+        font-weight: bold;
+      }
+      
+      input[type="email"],
+      input[type="password"],
+      select {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+      
+      input:focus, select:focus {
+        outline: none;
+        border-color: #007bff;
+      }
+      
+      .password-note {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+        font-style: italic;
+      }
+      
+      .button-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+      }
+      
+      button, .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+      }
+      
+      button[type="submit"] {
+        background-color: #007bff;
+        color: white;
+        flex: 1;
+      }
+      
+      button[type="submit"]:hover {
+        background-color: #0056b3;
+      }
+      
+      .btn-cancel {
+        background-color: #6c757d;
+        color: white;
+        flex: 1;
+      }
+      
+      .btn-cancel:hover {
+        background-color: #5a6268;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Editar Usuario</h1>
+    
+    <form th:action="@{'/admin/edit/usuario/' + ${usuarioId}}" 
+          th:object="${usuario}" 
+          method="post">
+      
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" 
+               id="email" 
+               th:field="*{email}" 
+               required 
+               placeholder="usuario@ejemplo.com"/>
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Nueva Contraseña:</label>
+        <input type="password" 
+               id="password" 
+               th:field="*{password}" 
+               placeholder="Dejar en blanco para mantener la actual"/>
+        <div class="password-note">
+          Deje este campo vacío si no desea cambiar la contraseña
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="empresa">Empresa:</label>
+        <select id="empresa" th:field="*{nameEmpresa}" required>
+          <option value="">Seleccione una empresa</option>
+          <option th:each="e : ${empresas}" 
+                  th:value="${e.nombre}" 
+                  th:text="${e.nombre}">
+          </option>
+        </select>
+      </div>
+      
+      <div class="button-group">
+        <button type="submit">💾 Guardar Cambios</button>
+        <a th:href="@{/admin}" class="btn btn-cancel">❌ Cancelar</a>
+      </div>
+    </form>
+  </body>
+</html>

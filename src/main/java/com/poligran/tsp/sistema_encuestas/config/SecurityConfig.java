@@ -22,6 +22,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class SecurityConfig {
     private final CustomUserDetailsService userDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -30,23 +31,22 @@ public class SecurityConfig {
                 .httpBasic(h -> h.disable())
                 .formLogin(login -> 
                         login.defaultSuccessUrl("/admin"))
+                // TODO: change this to dashboard
                 .authorizeHttpRequests(httz -> httz
                         .requestMatchers("/").permitAll()
+                        .requestMatchers("/admin").hasRole("ADMIN")
+                        .requestMatchers("/business").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .build();
 
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Bean
     AuthenticationProvider daoAuthenticationProvider() {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
-        provider.setPasswordEncoder(passwordEncoder());
+        provider.setPasswordEncoder(passwordEncoder);
         return provider;
     }   
 

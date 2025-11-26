@@ -1,8 +1,11 @@
 package com.poligran.tsp.sistema_encuestas.config;
 
+import java.util.List;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.poligran.tsp.sistema_encuestas.entities.Empresa;
@@ -17,6 +20,10 @@ public class DataInitializer {
             if (userRepository.count() == 0) {
                 Usuario usuario = Usuario.builder()
                     .email("admin@poligran.edu.co")
+                    .scopes(List.of(
+                                new SimpleGrantedAuthority("ROLE_USER"),
+                                new SimpleGrantedAuthority("ROLE_ADMIN")
+                                ))
                     .password(passwordEncoder.encode("admin"))
                     .build();
                 userRepository.save(usuario);
