@@ -39,7 +39,7 @@ public class Usuario implements UserDetails{
     @Column(unique = true, nullable = false)
     private String password;
     
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     private Empresa empresa;
 
     private List<GrantedAuthority> scopes;

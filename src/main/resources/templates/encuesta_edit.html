@@ -101,7 +101,7 @@
             <div class="left-col">
                 
                 <div class="card">
-                    <h3>⚙️ Configuración</h3>
+                  <h3>⚙️ Configuración encuesta id:<span th:text="${encuesta.id}"></span></h3>
                     
                     <form th:action="@{/customer/encuesta/edit/{id}(id=${encuesta.id})}" th:object="${encuesta}" method="post">
                         <label for="title">Título</label>

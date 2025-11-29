@@ -1,11 +1,196 @@
 <!DOCTYPE html>
-<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de encuestas</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bienvenido | POLI FORM</title>
+    <style>
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #0056b3;
+            --text-color: #333;
+            --bg-color: #f4f7f6;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Hero Section (Centrada) */
+        .hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 40px 20px;
+            background: white;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .logo-big {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+        
+        .badge-hero {
+            background-color: #ffc107;
+            color: #333;
+            font-size: 1rem;
+            padding: 5px 10px;
+            border-radius: 6px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .hero-text {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+
+        /* Botones */
+        .btn-cta {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(0, 123, 255, 0.4);
+        }
+
+        /* Alerta de Éxito (Condicional) */
+        .success-banner {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        .success-icon {
+            font-size: 1.5rem;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Features rápidas */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 60px;
+            text-align: left;
+        }
+
+        .feature-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .feature-item h3 { margin-top: 0; color: #333; }
+        .feature-item p { margin-bottom: 0; color: #666; font-size: 0.95rem; }
+
+        /* Footer */
+        .footer {
+            background-color: #343a40;
+            color: #ccc;
+            text-align: center;
+            padding: 20px;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-  <h1>Sistema de encuestas</h1>
+
+    <div th:insert="~{header :: headerFragment}"></div>
+
+    <main class="hero">
+        <div class="hero-content">
+            
+            <div th:if="${param.success}" class="success-banner">
+                <span class="success-icon">✅</span>
+                <div>
+                    <strong>¡Encuesta enviada con éxito!</strong>
+                    <br>
+                    Sus respuestas han sido registradas en nuestro sistema. Gracias por su tiempo.
+                </div>
+            </div>
+
+            <h1 class="logo-big">
+                <span class="badge-hero">PROTOTIPO</span>
+                POLI FORM
+            </h1>
+            
+            <p class="hero-text">
+                La plataforma integral para la gestión de encuestas empresariales, 
+                satisfacción del cliente y análisis de datos en tiempo real. 
+                Simple, rápido y efectivo.
+            </p>
+
+            <div th:if="${#authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/customer}" class="btn-cta">Ir a mi Dashboard →</a>
+            </div>
+            <div th:unless="${#authorization.expression('isAuthenticated()')}">
+                <a th:href="@{/login}" class="btn-cta">Ingresar al Portal</a>
+            </div>
+
+            <div class="features">
+                <div class="feature-item">
+                    <h3>📊 Análisis en vivo</h3>
+                    <p>Visualiza los resultados de tus encuestas a medida que llegan.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>📱 Multiplataforma</h3>
+                    <p>Diseñado para responder desde móviles, tablets o escritorio.</p>
+                </div>
+                <div class="feature-item">
+                    <h3>🔒 Seguro</h3>
+                    <p>Gestión de usuarios y empresas con autenticación robusta.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="footer">
+        &copy; 2025 Sistema de Encuestas Empresariales - TSP Grupo 9. Todos los derechos reservados.
+    </footer>
+
 </body>
 </html>

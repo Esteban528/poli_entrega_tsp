@@ -1,150 +1,256 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <head>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
     <meta charset="UTF-8" />
-    <title>Administración</title>
+    <title>Panel de Administración | POLI FORM</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 20px;
-      }
-      
-      .alert {
-        padding: 15px;
-        margin-bottom: 20px;
-        border-radius: 5px;
-      }
-      
-      .alert-success {
-        background-color: #d4edda;
-        color: #155724;
-        border: 1px solid #c3e6cb;
-      }
-      
-      .alert-error {
-        background-color: #f8d7da;
-        color: #721c24;
-        border: 1px solid #f5c6cb;
-      }
-      
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 30px;
-      }
-      
-      th, td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: left;
-      }
-      
-      th {
-        background-color: #f4f4f4;
-        font-weight: bold;
-      }
-      
-      a.btn {
-        display: inline-block;
-        padding: 8px 15px;
-        border-radius: 5px;
-        text-decoration: none;
-        color: white;
-        margin-right: 5px;
-        font-size: 14px;
-      }
-      
-      .create { background-color: #28a745; }
-      .edit { background-color: #007bff; }
-      .delete { background-color: #dc3545; }
-      
-      .create:hover { background-color: #218838; }
-      .edit:hover { background-color: #0056b3; }
-      .delete:hover { background-color: #c82333; }
-      
-      .actions-header {
-        margin-bottom: 20px;
-      }
-      
-      h1 {
-        color: #333;
-      }
-      
-      h2 {
-        color: #555;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 5px;
-      }
+        :root {
+            --primary: #007bff;
+            --secondary: #6c757d;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --light: #f8f9fa;
+            --dark: #343a40;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Título y Acciones */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .page-title {
+            margin: 0;
+            color: var(--dark);
+            font-size: 1.8rem;
+            border-left: 5px solid var(--primary);
+            padding-left: 15px;
+        }
+
+        .actions-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-create {
+            background-color: var(--success);
+            color: white;
+            box-shadow: 0 2px 5px rgba(40, 167, 69, 0.3);
+        }
+        .btn-create:hover { background-color: #218838; transform: translateY(-2px); }
+
+        /* Alertas */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .alert-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* Tarjetas de Sección */
+        .section-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            background-color: #fff;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            margin: 0;
+            font-size: 1.2rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        /* Tablas */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #666;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        td {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            color: #333;
+            vertical-align: middle;
+        }
+
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #fbfbfb; }
+
+        /* Botones de Tabla */
+        .action-links {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8rem;
+            border-radius: 4px;
+        }
+
+        .btn-edit { background-color: #e7f1ff; color: var(--primary); border: 1px solid #b3d7ff; }
+        .btn-edit:hover { background-color: var(--primary); color: white; }
+
+        .btn-delete { background-color: #fff5f5; color: var(--danger); border: 1px solid #f5c6cb; }
+        .btn-delete:hover { background-color: var(--danger); color: white; }
+
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-style: italic;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
 
     <div th:insert="~{header :: headerFragment}"></div>
-    <h1>Panel de Administración</h1>
-    
-    <!-- Mensajes de alerta -->
-    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
-    <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
-    
-    <div class="actions-header">
-      <a th:href="@{/admin/create/empresa}" class="btn create">➕ Registrar Empresa</a>
-      <a th:href="@{/admin/create/usuario}" class="btn create">➕ Registrar Usuario</a>
-    </div>
-    
-    <h2>Usuarios</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Email</th>
-          <th>Empresa</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="u : ${usuarios}">
-          <td th:text="${u.email}"></td>
-          <td th:text="${u.nameEmpresa}"></td>
-          <td>
-            <a th:href="@{'/admin/edit/usuario/' + ${u.id}}" class="btn edit">✏️ Editar</a>
-            <a th:href="@{'/admin/delete/usuario/' + ${u.id}}" 
-               class="btn delete" 
-               onclick="return confirm('¿Está seguro de eliminar este usuario?')">🗑️ Eliminar</a>
-          </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(usuarios)}">
-          <td colspan="3" style="text-align: center;">No hay usuarios registrados</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <hr />
-    
-    <h2>Empresas</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>NIT</th>
-          <th>Dirección</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr th:each="e : ${empresas}">
-          <td th:text="${e.nombre}"></td>
-          <td th:text="${e.nit}"></td>
-          <td th:text="${e.direccion}"></td>
-          <td>
-            <a th:href="@{'/admin/edit/empresa/' + ${e.id}}" class="btn edit">✏️ Editar</a>
-            <a th:href="@{'/admin/delete/empresa/' + ${e.id}}" 
-               class="btn delete" 
-               onclick="return confirm('¿Está seguro de eliminar esta empresa?')">🗑️ Eliminar</a>
-          </td>
-        </tr>
-        <tr th:if="${#lists.isEmpty(empresas)}">
-          <td colspan="5" style="text-align: center;">No hay empresas registradas</td>
-        </tr>
-      </tbody>
-    </table>
-  </body>
-</html>
+
+    <div class="container">
+        
+        <div class="page-header">
+            <h1 class="page-title">Panel de Administración</h1>
+            <div class="actions-group">
+                <a th:href="@{/admin/create/empresa}" class="btn btn-create">🏢 Nueva Empresa</a>
+                <a th:href="@{/admin/create/usuario}" class="btn btn-create">👤 Nuevo Usuario</a>
+            </div>
+        </div>
+
+        <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Gestión de Usuarios</h2>
+            </div>
+            
+            <div class="table-responsive">
+                <table th:if="${not #lists.isEmpty(usuarios)}">
+                    <thead>
+                        <tr>
+                            <th>Email / Usuario</th>
+                            <th>Empresa Asignada</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="u : ${usuarios}">
+                            <td th:text="${u.email}">usuario@email.com</td>
+                            <td>
+                                <span th:if="${u.nameEmpresa != null and !u.nameEmpresa.isEmpty()}" 
+                                      style="background: #e3f2fd; color: #0d47a1; padding: 2px 8px; border-radius: 12px; font-size: 0.85em; font-weight: bold;">
+                                    <span th:text="${u.nameEmpresa}">Empresa</span>
+                                </span>
+                                <span th:unless="${u.nameEmpresa != null and !u.nameEmpresa.isEmpty()}" style="color: #999;">- Sin Asignar -</span>
+                            </td>
+                            <td>
+                                <div class="action-links">
+                                    <a th:href="@{'/admin/edit/usuario/' + ${u.id}}" class="btn btn-sm btn-edit">✏️ Editar</a>
+                                    <a th:href="@{'/admin/delete/usuario/' + ${u.id}}" 
+                                       class="btn btn-sm btn-delete"
+                                       onclick="return confirm('¿Está seguro de eliminar este usuario?');">🗑️ Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${#lists.isEmpty(usuarios)}" class="empty-message">
+                    No hay usuarios registrados en el sistema.
+                </div>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-header">
+                <h2 class="section-title">Gestión de Empresas</h2>
+            </div>
+            
+            <div class="table-responsive">
+                <table th:if="${not #lists.isEmpty(empresas)}">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>NIT</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="e : ${empresas}">
+                            <td style="font-weight: bold;" th:text="${e.nombre}">Nombre</td>
+                            <td th:text="${e.nit}">NIT</td>
+                            <td th:text="${e.direccion}">Dirección</td>
+                            <td>
+                                <div class="action-links">
+                                    <a th:href="@{'/admin/edit/empresa/' + ${e.id}}" class="btn btn-sm btn-edit">✏️ Editar</a>
+                                    <a th:href="@{'/admin/delete/empresa/' + ${e.id}}" 
+                                       class="btn btn-sm btn-delete"
+                                       onclick="return confirm('¿Está seguro de eliminar esta empresa?');">🗑️ Eliminar</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div th:if="${#lists.isEmpty(empresas)}" class="empty-message">
+                    No hay empresas registradas en el sistema.
+                </div>
+            </div>
+        </div>

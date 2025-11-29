@@ -86,7 +86,7 @@
                         <td th:text="${e.fechaFin}">2023-02-01</td>
                         <td>
                             <a th:href="@{'/customer/encuesta/edit/' + ${e.id}}" class="btn-edit">✏️ Editar</a>
-                            <a th:href="@{'/customer/encuesta/report/' + ${e.id}}" class="btn-edit">Descargar reporte</a>
+                            <a th:href="@{'/customer/report/' + ${e.id}}" class="btn-edit">Descargar reporte</a>
                         </td>
                     </tr>
                 </tbody>

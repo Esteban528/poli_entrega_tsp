@@ -1,5 +1,6 @@
 package com.poligran.tsp.sistema_encuestas.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -27,8 +28,13 @@ public class ResponseController {
     @GetMapping("/r/{id}")
     String fillEncuesta(@PathVariable Long id, Model model) {
         var encuesta = encuestaService.findEncuestaById(id);
+
+        if (LocalDate.now().isAfter(encuesta.getFechaFin()))
+            return "redirect:/";
+
         var respuestaEncuestaDTO = new RespuestaEncuestaDTO();
         respuestaEncuestaDTO.setEncuestaId(encuesta.getId());
+
         model.addAttribute("encuesta", encuesta);
         model.addAttribute("respuesta", encuesta);
         return "fill_encuesta";
@@ -37,6 +43,6 @@ public class ResponseController {
     @PostMapping("/r/{id}")
     String sendEncuesta(RespuestaEncuestaDTO respuesta) {
         encuestaService.saveRespuestas(respuesta);
-        return "redirect:/";
+        return "redirect:/?success";
     }
 }

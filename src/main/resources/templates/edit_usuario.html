@@ -1,143 +1,112 @@
-<!doctype html>
-<html xmlns:th="http://www.thymeleaf.org">
-  <head>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
     <meta charset="UTF-8" />
-    <title>Editar Usuario</title>
+    <title>Editar Usuario | Admin</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        max-width: 600px;
-        margin: 50px auto;
-        padding: 20px;
-      }
-      
-      h1 {
-        color: #333;
-        border-bottom: 2px solid #007bff;
-        padding-bottom: 10px;
-      }
-      
-      form {
-        background-color: #f9f9f9;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      }
-      
-      .form-group {
-        margin-bottom: 20px;
-      }
-      
-      label {
-        display: block;
-        margin-bottom: 5px;
-        color: #555;
-        font-weight: bold;
-      }
-      
-      input[type="email"],
-      input[type="password"],
-      select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 14px;
-        box-sizing: border-box;
-      }
-      
-      input:focus, select:focus {
-        outline: none;
-        border-color: #007bff;
-      }
-      
-      .password-note {
-        font-size: 12px;
-        color: #666;
-        margin-top: 5px;
-        font-style: italic;
-      }
-      
-      .button-group {
-        display: flex;
-        gap: 10px;
-        margin-top: 25px;
-      }
-      
-      button, .btn {
-        padding: 10px 20px;
-        border: none;
-        border-radius: 5px;
-        font-size: 14px;
-        cursor: pointer;
-        text-decoration: none;
-        display: inline-block;
-        text-align: center;
-      }
-      
-      button[type="submit"] {
-        background-color: #007bff;
-        color: white;
-        flex: 1;
-      }
-      
-      button[type="submit"]:hover {
-        background-color: #0056b3;
-      }
-      
-      .btn-cancel {
-        background-color: #6c757d;
-        color: white;
-        flex: 1;
-      }
-      
-      .btn-cancel:hover {
-        background-color: #5a6268;
-      }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; }
+        .container { display: flex; justify-content: center; padding-top: 50px; padding-bottom: 50px; }
+        
+        .form-card {
+            background: white;
+            width: 100%;
+            max-width: 500px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .header-form { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #f0f0f0; padding-bottom: 20px; }
+        .header-form h2 { color: #333; margin: 0 0 5px 0; }
+        .header-form p { color: #777; font-size: 14px; margin: 0; }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; color: #555; font-weight: 600; }
+        input, select { 
+            width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; box-sizing: border-box; transition: border-color 0.3s;
+        }
+        input:focus, select:focus { border-color: #007bff; outline: none; }
+        
+        /* Nota para la contraseña */
+        .help-text { font-size: 12px; color: #888; margin-top: 5px; font-style: italic; }
+
+        .actions { display: flex; gap: 15px; margin-top: 30px; }
+        
+        button.btn-save { 
+            flex: 1; padding: 12px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); 
+            color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: transform 0.2s;
+        }
+        button.btn-save:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3); }
+
+        .btn-cancel { 
+            flex: 1; display: block; text-align: center; padding: 12px; background: #e9ecef; 
+            color: #495057; text-decoration: none; border-radius: 6px; font-weight: 600; 
+        }
+        .btn-cancel:hover { background: #dee2e6; }
+
+        /* Zona de Peligro */
+        .danger-zone {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px dashed #ffcccc;
+        }
+        .danger-title {
+            color: #dc3545; font-weight: bold; font-size: 12px; text-transform: uppercase; margin-bottom: 10px;
+        }
+        .btn-delete {
+            width: 100%; padding: 10px; background: white; border: 1px solid #dc3545; color: #dc3545;
+            border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-delete:hover { background: #dc3545; color: white; }
     </style>
-  </head>
-  <body>
-    <h1>Editar Usuario</h1>
-    
-    <form th:action="@{'/admin/edit/usuario/' + ${usuarioId}}" 
-          th:object="${usuario}" 
-          method="post">
-      
-      <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" 
-               id="email" 
-               th:field="*{email}" 
-               required 
-               placeholder="usuario@ejemplo.com"/>
-      </div>
-      
-      <div class="form-group">
-        <label for="password">Nueva Contraseña:</label>
-        <input type="password" 
-               id="password" 
-               th:field="*{password}" 
-               placeholder="Dejar en blanco para mantener la actual"/>
-        <div class="password-note">
-          Deje este campo vacío si no desea cambiar la contraseña
+</head>
+<body>
+    <div th:insert="~{header :: headerFragment}"></div>
+
+    <div class="container">
+        <div class="form-card">
+            <div class="header-form">
+                <h2>✏️ Editar Usuario</h2>
+                <p>Modifica las credenciales o accesos</p>
+            </div>
+
+            <form th:action="@{'/admin/edit/usuario/' + ${usuarioId}}" th:object="${usuario}" method="post">
+                
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" th:field="*{email}" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Nueva Contraseña</label>
+                    <input type="password" th:field="*{password}" placeholder="••••••••" />
+                    <p class="help-text">Deja este campo vacío si no quieres cambiar la contraseña actual.</p>
+                </div>
+
+                <div class="form-group">
+                    <label>Empresa Asignada</label>
+                    <select th:field="*{nameEmpresa}" required>
+                        <option value="" disabled>-- Seleccionar Empresa --</option>
+                        <option th:each="item : ${empresas}"
+                                th:value="${item.nombre}"
+                                th:text="${item.nombre}"></option>
+                    </select>
+                </div>
+
+                <div class="actions">
+                    <a th:href="@{/admin}" class="btn-cancel">Cancelar</a>
+                    <button type="submit" class="btn-save">Guardar Cambios</button>
+                </div>
+            </form>
+
+            <div class="danger-zone">
+                <div class="danger-title">Zona de Peligro</div>
+                <a th:href="@{'/admin/delete/usuario/' + ${usuarioId}}" 
+                   onclick="return confirm('¿Estás seguro de eliminar este usuario? Esta acción es irreversible.');">
+                    <button type="button" class="btn-delete">🗑️ Eliminar Usuario</button>
+                </a>
+            </div>
+
         </div>
-      </div>
-      
-      <div class="form-group">
-        <label for="empresa">Empresa:</label>
-        <select id="empresa" th:field="*{nameEmpresa}" required>
-          <option value="">Seleccione una empresa</option>
-          <option th:each="e : ${empresas}" 
-                  th:value="${e.nombre}" 
-                  th:text="${e.nombre}">
-          </option>
-        </select>
-      </div>
-      
-      <div class="button-group">
-        <button type="submit">💾 Guardar Cambios</button>
-        <a th:href="@{/admin}" class="btn btn-cancel">❌ Cancelar</a>
-      </div>
-    </form>
-  </body>
-</html>
+    </div>
+</body>

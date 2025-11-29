@@ -72,7 +72,7 @@ public class AdminController {
 
             model.addAttribute("empresa", empresaDTO);
             model.addAttribute("empresaId", id);
-            return "edit_empresa";
+            return "create_empresa";
         } catch (Exception e) {
             logger.error("Error al buscar empresa: {}", e.getMessage());
             redirectAttributes.addFlashAttribute("error", "Empresa no encontrada");
