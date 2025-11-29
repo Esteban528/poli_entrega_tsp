@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <title>Mis Encuestas | Sistema de Encuestas</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; }
         .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
         
-        /* Header de la sección */
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -16,45 +17,76 @@
         }
         h1 { color: #333; margin: 0; }
         
-        /* Botón de acción principal */
         .btn-create {
-            background-color: #28a745;
-            color: white;
-            text-decoration: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            transition: background 0.3s;
+            background-color: #28a745; color: white; text-decoration: none; padding: 10px 20px;
+            border-radius: 5px; font-weight: bold; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: background 0.3s;
         }
         .btn-create:hover { background-color: #218838; }
 
-        /* Estilos de la Tabla */
         .table-card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-            overflow: hidden;
+            background: white; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); overflow: hidden;
         }
         table { width: 100%; border-collapse: collapse; }
         th { background-color: #f8f9fa; color: #555; font-weight: 600; text-align: left; padding: 15px 20px; border-bottom: 2px solid #eee; }
-        td { padding: 15px 20px; border-bottom: 1px solid #eee; color: #333; }
+        td { padding: 15px 20px; border-bottom: 1px solid #eee; color: #333; vertical-align: middle; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #fbfbfb; }
 
-        /* Botones de acción en tabla */
-        .btn-edit {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 500;
-            border: 1px solid #cce5ff;
-            padding: 5px 10px;
-            border-radius: 4px;
-            background: #e8f0fe;
-        }
-        .btn-edit:hover { background: #007bff; color: white; }
+        /* Botones de acción */
+        .actions-cell { display: flex; gap: 8px; }
         
+        .btn-action {
+            text-decoration: none; font-weight: 500; border: 1px solid transparent;
+            padding: 5px 10px; border-radius: 4px; font-size: 14px; cursor: pointer; transition: all 0.2s;
+        }
+
+        .btn-edit { color: #007bff; border-color: #cce5ff; background: #e8f0fe; }
+        .btn-edit:hover { background: #007bff; color: white; }
+
+        .btn-report { color: #17a2b8; border-color: #bee5eb; background: #e2e6ea; }
+        .btn-report:hover { background: #17a2b8; color: white; }
+
+        /* Nuevo Botón Compartir (Morado) */
+        .btn-share { color: #6f42c1; border-color: #d6d8db; background: #f3f0ff; border: 1px solid #e0cffc; }
+        .btn-share:hover { background: #6f42c1; color: white; border-color: #6f42c1; }
+
         .empty-state { text-align: center; padding: 40px; color: #777; }
+
+        /* --- ESTILOS DEL MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+
+        .modal-content {
+            background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 400px;
+            text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: translateY(20px); transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-content { transform: translateY(0); }
+
+        .modal-title { margin-top: 0; color: #333; }
+        
+        #qrcode { margin: 20px auto; display: flex; justify-content: center; }
+        
+        .link-container {
+            display: flex; gap: 5px; margin-top: 20px;
+        }
+        .link-input {
+            flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px; background: #f9f9f9; color: #555;
+        }
+        .btn-copy {
+            background: #007bff; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer;
+        }
+        .btn-copy:hover { background: #0056b3; }
+
+        .btn-close-modal {
+            margin-top: 20px; background: transparent; border: 1px solid #ddd; padding: 8px 20px;
+            border-radius: 20px; cursor: pointer; color: #666;
+        }
+        .btn-close-modal:hover { background: #eee; color: #333; }
+
     </style>
 </head>
 <body>
@@ -85,8 +117,17 @@
                         <td th:text="${e.fechaInicio}">2023-01-01</td>
                         <td th:text="${e.fechaFin}">2023-02-01</td>
                         <td>
-                            <a th:href="@{'/customer/encuesta/edit/' + ${e.id}}" class="btn-edit">✏️ Editar</a>
-                            <a th:href="@{'/customer/report/' + ${e.id}}" class="btn-edit">Descargar reporte</a>
+                            <div class="actions-cell">
+                                <a th:href="@{'/customer/encuesta/edit/' + ${e.id}}" class="btn-action btn-edit" title="Editar">✏️</a>
+                                <a th:href="@{'/customer/report/' + ${e.id}}" class="btn-action btn-report" title="Descargar CSV">📥</a>
+                                
+                                <button type="button" 
+                                        class="btn-action btn-share" 
+                                        th:onclick="'openShareModal(' + ${e.id} + ')'"
+                                        title="Compartir Link y QR">
+                                    🔗 QR
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -98,5 +139,78 @@
             </div>
         </div>
     </div>
+
+    <div id="shareModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">Compartir Encuesta</h3>
+            <p style="color:#666; font-size:14px;">Escanea el código o copia el enlace</p>
+            
+            <div id="qrcode"></div>
+
+            <div class="link-container">
+                <input type="text" id="shareUrl" class="link-input" readonly />
+                <button onclick="copyToClipboard()" class="btn-copy">Copiar</button>
+            </div>
+
+            <button class="btn-close-modal" onclick="closeShareModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Referencias a elementos
+        const modal = document.getElementById('shareModal');
+        const urlInput = document.getElementById('shareUrl');
+        const qrContainer = document.getElementById('qrcode');
+        let qrcodeObj = null; // Para guardar la instancia del QR
+
+        function openShareModal(id) {
+            // 1. Construir la URL dinámica basada en el dominio actual
+            // window.location.origin devuelve "http://localhost:8080" o tu dominio real
+            const fullUrl = window.location.origin + '/r/' + id;
+            
+            // 2. Poner la URL en el input
+            urlInput.value = fullUrl;
+
+            // 3. Limpiar QR anterior si existe
+            qrContainer.innerHTML = '';
+
+            // 4. Generar nuevo QR
+            // Usamos la librería qrcode.js cargada en el head
+            new QRCode(qrContainer, {
+                text: fullUrl,
+                width: 180,
+                height: 180,
+                colorDark : "#000000",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            // 5. Mostrar Modal
+            modal.classList.add('active');
+        }
+
+        function closeShareModal() {
+            modal.classList.remove('active');
+        }
+
+        function copyToClipboard() {
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // Para móviles
+            
+            navigator.clipboard.writeText(urlInput.value).then(() => {
+                alert("¡Enlace copiado al portapapeles!");
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+
+        // Cerrar si se hace clic fuera del contenido del modal
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeShareModal();
+            }
+        });
+    </script>
+
 </body>
 </html>
