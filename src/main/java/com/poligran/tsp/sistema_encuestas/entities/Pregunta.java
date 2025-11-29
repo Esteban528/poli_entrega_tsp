@@ -1,5 +1,6 @@
 package com.poligran.tsp.sistema_encuestas.entities;
 
+import jakarta.persistence.Entity;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,21 +24,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Empresa {
+public class Pregunta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(unique = true, nullable = false)
-    private String nombre;
 
-    @Column(unique = true, nullable = false)
-    private String nit;
+    private String title;
 
-    @Column(unique = true, nullable = false)
-    private String direccion;
+    private String type;
 
-    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Usuario> userList;
+    @ManyToOne
+    private Encuesta encuesta;
+
+    @OneToMany(mappedBy="pregunta" ,cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Respuesta> respuestas;
 }

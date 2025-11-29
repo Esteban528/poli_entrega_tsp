@@ -1,7 +1,9 @@
 package com.poligran.tsp.sistema_encuestas.entities;
 
-
+import java.time.LocalDate;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -12,7 +14,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,21 +24,23 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Empresa {
+public class Encuesta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @Column(unique = true, nullable = false)
-    private String nombre;
 
-    @Column(unique = true, nullable = false)
-    private String nit;
+    @ManyToOne
+    private Empresa empresa;
 
-    @Column(unique = true, nullable = false)
-    private String direccion;
+    private String title;
 
-    @OneToMany(mappedBy = "empresa", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Usuario> userList;
+    @OneToMany(mappedBy = "encuesta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Pregunta> preguntas;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaInicio;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate fechaFin;
 }

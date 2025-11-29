@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Mis Encuestas | Sistema de Encuestas</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; }
+        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        
+        /* Header de la sección */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        h1 { color: #333; margin: 0; }
+        
+        /* Botón de acción principal */
+        .btn-create {
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: background 0.3s;
+        }
+        .btn-create:hover { background-color: #218838; }
+
+        /* Estilos de la Tabla */
+        .table-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        th { background-color: #f8f9fa; color: #555; font-weight: 600; text-align: left; padding: 15px 20px; border-bottom: 2px solid #eee; }
+        td { padding: 15px 20px; border-bottom: 1px solid #eee; color: #333; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #fbfbfb; }
+
+        /* Botones de acción en tabla */
+        .btn-edit {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid #cce5ff;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: #e8f0fe;
+        }
+        .btn-edit:hover { background: #007bff; color: white; }
+        
+        .empty-state { text-align: center; padding: 40px; color: #777; }
+    </style>
+</head>
+<body>
+
+    <div th:insert="~{header :: headerFragment}"></div>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>📊 Mis Encuestas</h1>
+            <a th:href="@{/customer/encuesta/create}" class="btn-create">+ Nueva Encuesta</a>
+        </div>
+
+        <div class="table-card">
+            <table th:if="${not #lists.isEmpty(encuestas)}">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Inicio</th>
+                        <th>Fin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="e : ${encuestas}">
+                        <td th:text="${'#' + e.id}">1</td>
+                        <td th:text="${e.title}">Título</td>
+                        <td th:text="${e.fechaInicio}">2023-01-01</td>
+                        <td th:text="${e.fechaFin}">2023-02-01</td>
+                        <td>
+                            <a th:href="@{'/customer/encuesta/edit/' + ${e.id}}" class="btn-edit">✏️ Editar</a>
+                            <a th:href="@{'/customer/encuesta/report/' + ${e.id}}" class="btn-edit">Descargar reporte</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${#lists.isEmpty(encuestas)}" class="empty-state">
+                <h3>No tienes encuestas creadas aún</h3>
+                <p>Crea tu primera encuesta para empezar a recolectar datos.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

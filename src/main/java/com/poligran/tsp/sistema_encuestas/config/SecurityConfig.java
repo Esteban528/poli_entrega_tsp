@@ -30,10 +30,9 @@ public class SecurityConfig {
                 .csrf(Customizer.withDefaults())
                 .httpBasic(h -> h.disable())
                 .formLogin(login -> 
-                        login.defaultSuccessUrl("/admin"))
-                // TODO: change this to dashboard
+                        login.defaultSuccessUrl("/customer"))
                 .authorizeHttpRequests(httz -> httz
-                        .requestMatchers("/").permitAll()
+                        .requestMatchers("/", "/r/*").permitAll()
                         .requestMatchers("/admin").hasRole("ADMIN")
                         .requestMatchers("/business").hasRole("USER")
                         .anyRequest().authenticated()

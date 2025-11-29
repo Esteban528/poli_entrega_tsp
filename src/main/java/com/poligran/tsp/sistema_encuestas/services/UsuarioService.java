@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,7 +22,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class UsuarioService {
-    
+
     private final UsuarioRepository usuarioRepository;
     private final EmpresaService empresaService;
     private final PasswordEncoder passwordEncoder;
@@ -28,6 +30,12 @@ public class UsuarioService {
     public Usuario findUsuarioByEmail(String email) throws UsernameNotFoundException {
         return usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Not Found"));
+    }
+
+    public Usuario getAuthUsuario() {
+        SecurityContext sContext = SecurityContextHolder.getContext();
+        return findUsuarioByEmail(
+                sContext.getAuthentication().getName());
     }
 
     public List<Usuario> listAll() {
@@ -41,14 +49,14 @@ public class UsuarioService {
     public Usuario save(UsuarioDTO usuarioDTO) {
         Empresa empresa = empresaService.findByNombre(
                 usuarioDTO.getNameEmpresa());
-        
+
         Usuario usuario = Usuario.builder()
                 .email(usuarioDTO.getEmail())
                 .password(passwordEncoder.encode(usuarioDTO.getPassword()))
                 .empresa(empresa)
                 .scopes(List.of(new SimpleGrantedAuthority("ROLE_USER")))
                 .build();
-        
+
         return save(usuario);
     }
 

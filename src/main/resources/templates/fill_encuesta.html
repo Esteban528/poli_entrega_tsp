@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title th:text="${encuesta.title} + ' - Encuesta'">Completar Encuesta</title>
+    <style>
+        /* Variables y Reset */
+        :root {
+            --primary-color: #007bff;
+            --bg-color: #f0f2f5;
+            --text-color: #333;
+            --border-color: #ced4da;
+        }
+        
+        * { box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        /* Contenedor Principal (Hoja) */
+        .survey-container {
+            max-width: 640px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-top: 10px solid var(--primary-color); /* Toque de color corporativo */
+        }
+
+        /* Encabezado de la Encuesta */
+        .survey-header {
+            padding: 30px 40px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .survey-title {
+            font-size: 28px;
+            margin: 0 0 10px 0;
+            color: #1a1a1a;
+        }
+        
+        .survey-meta {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+        .company-badge {
+            background-color: #e7f1ff;
+            color: var(--primary-color);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Formulario y Preguntas */
+        .survey-form {
+            padding: 40px;
+        }
+
+        .question-block {
+            margin-bottom: 30px;
+            background: #fff;
+        }
+
+        .question-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        /* Inputs Generales */
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        /* Estilo específico para la escala 1-5 */
+        .scale-helper {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        /* Botón de Enviar */
+        .submit-btn {
+            display: block;
+            width: 100%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Footer simple */
+        .survey-footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            padding: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .survey-container { margin: 0; border-radius: 0; border-top: none; }
+            .survey-header, .survey-form { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="survey-container">
+        
+        <div class="survey-header">
+            <h1 class="survey-title" th:text="${encuesta.title}">Título de la Encuesta</h1>
+            <p class="survey-meta">
+                Encuesta realizada por <span class="company-badge" th:text="${encuesta.empresa.nombre}">Nombre Empresa</span>
+            </p>
+        </div>
+
+        <form class="survey-form" th:action="@{/r/{id}(id=${encuesta.id})}" method="post" th:object="${respuesta}">
+            
+            <div th:each="p : ${encuesta.preguntas}" class="question-block">
+                
+                <label class="question-label" th:for="|preguntas[${p.id}]|" th:text="${p.title}">
+                    ¿Pregunta?
+                </label>
+
+                <input th:if="${p.type == 'text'}" 
+                       type="text" 
+                       th:name="|preguntas[${p.id}]|" 
+                       placeholder="Escribe tu respuesta aquí..." required />
+
+                <input th:if="${p.type == 'email'}" 
+                       type="email" 
+                       th:name="|preguntas[${p.id}]|" 
+                       placeholder="nombre@ejemplo.com" required />
+
+                <input th:if="${p.type == 'date'}" 
+                       type="date" 
+                       th:name="|preguntas[${p.id}]|" required />
+
+                <input th:if="${p.type == 'number'}" 
+                       type="number" 
+                       th:name="|preguntas[${p.id}]|" 
+                       placeholder="0" required />
+
+                <input th:if="${p.type == 'phone'}" 
+                       type="number" 
+                       th:name="|preguntas[${p.id}]|" 
+                       placeholder="Número de contacto" required />
+
+                <div th:if="${p.type == '1-5'}">
+                    <p class="scale-helper">Selecciona una opción de la lista:</p>
+                    <select th:name="|preguntas[${p.id}]|" required>
+                        <option value="" disabled selected>-- Seleccione una calificación --</option>
+                        <option th:value="1">⭐ 1 - Muy insatisfecho</option>
+                        <option th:value="2">⭐⭐ 2 - Insatisfecho</option>
+                        <option th:value="3">⭐⭐⭐ 3 - Neutral</option>
+                        <option th:value="4">⭐⭐⭐⭐ 4 - Satisfecho</option>
+                        <option th:value="5">⭐⭐⭐⭐⭐ 5 - Muy satisfecho</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <button type="submit" class="submit-btn">Enviar Encuesta</button>
+        </form>
+    </div>
+
+    <div class="survey-footer">
+        Desarrollado con el Sistema de Encuestas - TSP Grupo 9
+    </div>
+
+</body>
+</html>

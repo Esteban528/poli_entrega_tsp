@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Editar Encuesta</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        
+        .back-link { display: inline-block; margin-bottom: 20px; color: #667eea; text-decoration: none; font-weight: 500; }
+        .back-link:hover { text-decoration: underline; }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr; 
+            gap: 30px;
+        }
+
+        /* Estilos de Tarjetas */
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .card h3 { margin-top: 0; color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; margin-bottom: 20px; font-size: 18px; }
+
+        /* Formularios */
+        label { display: block; margin-bottom: 6px; font-weight: 600; color: #555; font-size: 14px; }
+        input[type="text"], input[type="date"], select {
+            width: 100%; padding: 10px; margin-bottom: 15px;
+            border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box;
+        }
+        
+        .btn-primary { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn-primary:hover { background: #0056b3; }
+        
+        .btn-success { background: #28a745; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        .btn-success:hover { background: #218838; }
+
+        /* Danger Zone */
+        .danger-zone {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #ffcccc;
+        }
+        .danger-label {
+            color: #dc3545;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        .btn-danger-block {
+            background-color: #fff;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+            padding: 10px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-danger-block:hover {
+            background-color: #dc3545;
+            color: white;
+        }
+
+        /* Lista de Preguntas */
+        .question-list { list-style: none; padding: 0; margin: 0; }
+        .question-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .q-info h4 { margin: 0 0 5px 0; font-size: 16px; color: #333; }
+        .q-tag { font-size: 12px; background: #e2e6ea; padding: 3px 8px; border-radius: 12px; color: #666; text-transform: uppercase; font-weight: bold; }
+        
+        .btn-delete-mini {
+            background: #fff; border: 1px solid #999; color: #666;
+            padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+        }
+        .btn-delete-mini:hover { background: #dc3545; border-color: #dc3545; color: white; }
+
+        .empty-questions { text-align: center; color: #999; padding: 20px; border: 2px dashed #ddd; border-radius: 8px; }
+
+        @media (max-width: 768px) {
+            .editor-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div th:insert="~{header :: headerFragment}"></div>
+
+    <div class="container">
+        <a th:href="@{/customer/encuesta}" class="back-link">← Volver al listado</a>
+
+        <div class="editor-grid">
+            
+            <div class="left-col">
+                
+                <div class="card">
+                    <h3>⚙️ Configuración</h3>
+                    
+                    <form th:action="@{/customer/encuesta/edit/{id}(id=${encuesta.id})}" th:object="${encuesta}" method="post">
+                        <label for="title">Título</label>
+                        <input type="text" id="title" th:field="*{title}" required />
+
+                        <label for="fecha">Fecha Fin</label>
+                        <input type="date" id="fecha" th:field="*{fechaFin}" />
+
+                        <button type="submit" class="btn-primary">Guardar Cambios</button>
+                    </form>
+
+                    <div class="danger-zone">
+                        <form th:action="@{/customer/encuesta/remove/{id}(id=${encuesta.id})}" method="post">
+                            <button type="submit" class="btn-danger-block" onclick="return confirm('¿Estás seguro de que deseas eliminar TODA la encuesta? Esta acción no se puede deshacer.')">
+                                🗑️ Eliminar Encuesta
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card" style="background-color: #f0f7ff; border: 1px solid #cce5ff;">
+                    <h3 style="border-color: #dae8f9;">➕ Nueva Pregunta</h3>
+                    <form th:action="@{/customer/encuesta/pregunta/add/{id}(id=${encuesta.id})}" th:object="${newPregunta}" method="post">
+                        <input type="hidden" th:field="*{encuestaId}" />
+                        
+                        <label for="q-title">Texto de la pregunta</label>
+                        <input type="text" id="q-title" th:field="*{title}" placeholder="¿Qué te pareció el servicio?" required />
+
+                        <label for="q-type">Tipo de respuesta</label>
+                        <select id="q-type" th:field="*{type}" required>
+                            <option value="" disabled selected>Seleccionar tipo...</option>
+                            <option th:each="type : ${preguntaTypes}" th:value="${type}" th:text="${#strings.toUpperCase(type)}"></option>
+                        </select>
+
+                        <button type="submit" class="btn-success">Agregar Pregunta</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="right-col">
+                <div class="card">
+                    <h3>📋 Preguntas de la Encuesta</h3>
+                    
+                    <div th:if="${#lists.isEmpty(encuesta.preguntas)}" class="empty-questions">
+                        <p>Esta encuesta aún no tiene preguntas.</p>
+                        <p>Usa el formulario de la izquierda para agregar la primera.</p>
+                    </div>
+
+                    <ul th:unless="${#lists.isEmpty(encuesta.preguntas)}" class="question-list">
+                        <li th:each="q : ${encuesta.preguntas}" class="question-item">
+                            <div class="q-info">
+                                <h4 th:text="${q.title}">Título de la pregunta</h4>
+                                <span class="q-tag" th:text="${q.type}">TEXT</span>
+                            </div>
+                            
+                            <form method="post" th:action="@{/customer/encuesta/pregunta/remove/{id}(id=${encuesta.id})}">
+                                <input type="hidden" name="id" th:value="${q.id}" />
+                                <button type="submit" class="btn-delete-mini" onclick="return confirm('¿Eliminar esta pregunta?')">Eliminar</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaInput = document.getElementById('fecha');
+            if (fechaInput) {
+                const today = new Date();
+                // Formato YYYY-MM-DD
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                
+                const minDate = `${yyyy}-${mm}-${dd}`;
+                
+                // Establecemos el atributo min
+                fechaInput.min = minDate;
+            }
+        });
+    </script>
+</body>
+</html>
