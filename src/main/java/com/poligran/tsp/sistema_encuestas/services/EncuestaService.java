@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.TreeMap;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +94,10 @@ public class EncuestaService {
         encuesta.getPreguntas().parallelStream()
                 .map(p -> preguntaRepository.findById(p.getId()).orElseThrow())
                 .flatMap(p -> p.getRespuestas().stream())
+                .map(p-> {
+                    logger.info("{}", p);
+                    return p;
+                })
                 .forEach(respuestaRepository::delete);
 
         encuestaRepository.deleteById(id);
@@ -107,5 +112,20 @@ public class EncuestaService {
                     .value(v)
                     .build());
         });
+    }
+
+    @Transactional
+    public Map<String, List<String>> findEncuestaRespuestasFormat(Long id) {
+        Encuesta encuesta = findEncuestaById(id);
+        Map<String, List<String>> map = new TreeMap<>();
+        encuesta.getPreguntas().forEach(p -> {
+            Pregunta pre = preguntaRepository.findById(p.getId()).orElseThrow();
+            List<String> values = new ArrayList<>(pre.getRespuestas().size());
+            map.put(pre.getTitle(), values);
+            for(Respuesta res: pre.getRespuestas()){
+                values.add(res.getValue());
+            }
+        });
+        return map;
     }
 }

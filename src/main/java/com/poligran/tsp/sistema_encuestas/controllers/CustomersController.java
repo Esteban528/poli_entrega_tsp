@@ -1,5 +1,6 @@
 package com.poligran.tsp.sistema_encuestas.controllers;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -19,15 +20,18 @@ import com.poligran.tsp.sistema_encuestas.entities.Encuesta;
 import com.poligran.tsp.sistema_encuestas.entities.Pregunta;
 import com.poligran.tsp.sistema_encuestas.services.EncuestaService;
 import com.poligran.tsp.sistema_encuestas.services.UsuarioService;
+import com.poligran.tsp.sistema_encuestas.utils.CsvComponent;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @RequestMapping("/customer")
 @Controller
 @RequiredArgsConstructor
 public class CustomersController {
-    final EncuestaService encuestaService;
-    final UsuarioService usuarioService;
+    private final EncuestaService encuestaService;
+    private final UsuarioService usuarioService;
+    private final CsvComponent csvComponent;
     private static final Logger logger = LoggerFactory.getLogger(CustomersController.class);
     final List<String> preguntaTypes = List.of(
             "text", "email", "date", "1-5", "number", "phone");
@@ -98,7 +102,10 @@ public class CustomersController {
     }
 
     @GetMapping("/report/{id}")
-    String showReports(@PathVariable Long id) {
-        return "";
+    void showReports(@PathVariable Long id, HttpServletResponse response) throws IOException {
+        response.setContentType("text/csv");
+        response.setHeader("Content-Disposition", "attachment; filename=\"data.csv\"");
+        var content = encuestaService.findEncuestaRespuestasFormat(id);
+        csvComponent.writeStudentsToCsv(response.getWriter(), content);
     }
 }
